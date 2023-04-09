@@ -61,25 +61,28 @@ Element* scanner_next_element(Scanner* scanner){
 
     //return type of each element
     switch(scanner->current){
-      case '+': return scanner_advance_current(scanner, PLUS_SIGN);
-      case '-': return scanner_advance_current(scanner, MINUS_SIGN);
-      case '*': return scanner_advance_current(scanner, MULTIPLY_SIGN);
-      case '/': return scanner_advance_current(scanner, DIVIDE_SIGN);
-      case '=': return scanner_advance_current(scanner, EQUAL_SIGN);
-      case '(': return scanner_advance_current(scanner, LEFT_PARENTHESIS);
-      case ')': return scanner_advance_current(scanner, RIGHT_PARENTHESIS);
-      case '[': return scanner_advance_current(scanner, LEFT_BRACKET);
-      case ']': return scanner_advance_current(scanner, RIGHT_BRACKET);
-      case '{': return scanner_advance_current(scanner, LEFT_BRACE);
-      case '}': return scanner_advance_current(scanner, RIGHT_BRACE);
-      case '<': return scanner_advance_current(scanner, LESSTHAN_SIGN);
-      case '>': return scanner_advance_current(scanner, GREATERTHAN_SIGN);
-      case '^': return scanner_advance_current(scanner, CARET);
-      case '!': return scanner_advance_current(scanner, EXCLAMATION);
-      case '%': return scanner_advance_current(scanner, PERCENT_SIGN);
+      case '+': return scanner_advance_current(scanner, PLUS_SIGN); break;
+      case '-': return scanner_advance_current(scanner, MINUS_SIGN); break;
+      case '*': return scanner_advance_current(scanner, MULTIPLY_SIGN); break;
+      case '/': return scanner_advance_current(scanner, DIVIDE_SIGN); break;
+      case '=': return scanner_advance_current(scanner, EQUAL_SIGN); break;
+      case '(': return scanner_advance_current(scanner, LEFT_PARENTHESIS); break;
+      case ')': return scanner_advance_current(scanner, RIGHT_PARENTHESIS); break;
+      case '[': return scanner_advance_current(scanner, LEFT_BRACKET); break;
+      case ']': return scanner_advance_current(scanner, RIGHT_BRACKET); break;
+      case '{': return scanner_advance_current(scanner, LEFT_BRACE); break;
+      case '}': return scanner_advance_current(scanner, RIGHT_BRACE); break;
+      case '<': return scanner_advance_current(scanner, LESSTHAN_SIGN); break;
+      case '>': return scanner_advance_current(scanner, GREATERTHAN_SIGN); break;
+      case '^': return scanner_advance_current(scanner, CARET); break;
+      case '!': return scanner_advance_current(scanner, EXCLAMATION); break;
+      case '%': return scanner_advance_current(scanner, PERCENT_SIGN); break;
 
-      default: printf("[scanner]: unexpected character %c\n", scanner->current);
-      exit(1); break;
+      default: {
+        printf("[scanner]: unexpected character %c\n", scanner->current);
+        scanner_advance(scanner);
+      }
+      break;
     }
   }
 

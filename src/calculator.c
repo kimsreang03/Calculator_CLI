@@ -47,7 +47,8 @@ void calculator(char* input){
 
   printf("the result is %f\n\n", result);
 
-
+  free(constant);
+  free(operator);
 }
 
 
@@ -146,7 +147,6 @@ float calculate_arithmetic(float* constant, short* operator, short constant_size
   }
   free(constant);
   free(operator);
-  free(constant);
-  free(operator);
+
   return result;
 }
