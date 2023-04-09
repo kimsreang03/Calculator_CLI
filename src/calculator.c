@@ -8,7 +8,7 @@
 
 void calculator(char* input){
 
-  short i = 0, j = 0;
+  short constant_size = 0, operator_size = 0;
 
 
   float* constant = NULL;
@@ -20,13 +20,13 @@ void calculator(char* input){
   while((element= scanner_next_element(scanner))->type != EOI){
     //check if element is not constant
     if(element->type != CONSTANT){
-        operator = realloc(operator, (j+1) * sizeof(short));
-        operator[j] = element->type;
-        j++;
+        operator = realloc(operator, (operator_size+1) * sizeof(short));
+        operator[operator_size] = element->type;
+        operator_size++;
       } else{ // if element is constant
-        constant = realloc(constant, (i+1) * sizeof(float));
-        constant[i] = conevert_to_constant(element->value);
-        i++;
+        constant = realloc(constant, (constant_size+1) * sizeof(float));
+        constant[constant_size] = conevert_to_constant(element->value);
+        constant_size++;
     }
     free(element->value);
     free(element);
@@ -35,50 +35,56 @@ void calculator(char* input){
   free(scanner);
   free(element);
 
+  for(int i = 0; i < constant_size; i++){
+   printf("_number_: %f\n", constant[i]);
+ }
+ for(int i = 0; i < operator_size; i++){
+   printf("_operator_: %d\n", operator[i]);
+ }
+
+  float result = calculate_arithmetic(constant, operator,constant_size, operator_size);
 
   free(constant);
   free(operator);
 }
 
 
-float calculate_arithmetic(float* constant, const short* operator){
+float calculate_arithmetic(float* constant, const short* operator, short constant_size, short operator_size){
 
-  // for(int i = 0; i < constant_size; i++){
-  //   printf("number: %f\n", constant[i]);
-  // }
-  // for(int i = 0; i < operator_size; i++){
-  //   printf("operator: %d\n", operator[i]);
-  // }
+
 
   // + - * / 1 2 3` 4`
 
   float result = 0;
-  short constant_size = sizeof(constant)/sizeof(float);
-  short operator_size = sizeof(operator)/sizeof(short);
+
   short i = 0;
   float* newConstant = NULL;
   while(i < operator_size){
-    if(operator[i] != MULTIPLY_SIGN || operator[i] != DIVIDE_SIGN){
-      newConstant = realloc(newConstant, (i+1)*sizeof(float));
-      newConstant[i] = constant[i];
-    }else if(operator[i] == MULTIPLY_SIGN || operator[i] == DIVIDE_SIGN){
-      newConstant = realloc(newConstant, (i+1)*sizeof(float));
-      if(operator[i] == MULTIPLY_SIGN) constant[i+1] = constant[i] * constant[i+1];
-      if(operator[i] == DIVIDE_SIGN) constant[i+1] = constant[i] / constant[i+1];
+    printf("operator: %d\n", operator[0]);
+    if(operator[i] == MULTIPLY_SIGN || operator[i] == DIVIDE_SIGN){
 
-      while(operator[i+1] == MULTIPLY_SIGN || operator[i+1] == DIVIDE_SIGN){
+      while(operator[i] == MULTIPLY_SIGN || operator[i] == DIVIDE_SIGN){
         if(operator[i] == MULTIPLY_SIGN) constant[i+1] = constant[i] * constant[i+1];
         if(operator[i] == DIVIDE_SIGN) constant[i+1] = constant[i] / constant[i+1];
         i++;
+        printf("constant: %f\n", constant[i+1]);
       }
+      newConstant = realloc(newConstant, (i+1)*sizeof(float));
       newConstant[i] = constant[i+1];
+    }else{
+      printf("yr\n");
+      newConstant = realloc(newConstant, (i+1)*sizeof(float));
+      newConstant[i] = constant[i];
+
     }
     i++;
-
   }
+  newConstant = realloc(newConstant, (i+1)*sizeof(float));
+  newConstant[i] = constant[i];
 
-  for(int i = 0, str = sizeof(newConstant)/sizeof(float); i < str; i++){
-    printf("%f\n",newConstant[i]);
+
+  for(int a = 0; a < i + 1; a++){
+    printf("%f\n",newConstant[a]);
   }
   return result;
 }
