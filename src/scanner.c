@@ -18,6 +18,8 @@ Scanner* init_scanner(char* input){
   scanner->input_size = strlen(input);
   scanner->index = 0;
   scanner->current = input[scanner->index];
+
+  return scanner;
 }
 
 void scanner_advance(Scanner* scanner){
@@ -76,7 +78,7 @@ Element* scanner_next_element(Scanner* scanner){
       case '!': return scanner_advance_current(scanner, EXCLAMATION);
       case '%': return scanner_advance_current(scanner, PERCENT_SIGN);
 
-      default: printf("[scanner]: unexpected character %s\n", scanner->current);
+      default: printf("[scanner]: unexpected character %c\n", scanner->current);
       exit(1); break;
     }
   }

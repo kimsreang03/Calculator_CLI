@@ -3,6 +3,5 @@
 
 void calculator(char* input);
 
-float calculate_arithmetic( float* constant, const short* operator, const short constant_size, const short operator_size);
-
+float calculate_arithmetic( float* constant, const short* operator);
 #endif
