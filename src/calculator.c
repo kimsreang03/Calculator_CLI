@@ -41,8 +41,11 @@ void calculator(char* input){
  for(int i = 0; i < operator_size; i++){
    printf("_operator_: %d\n", operator[i]);
  }
+ printf("\n\n");
 
   float result = calculate_arithmetic(constant, operator,constant_size, operator_size);
+
+  printf("\n\nthe result is %f\n", result);
 
   free(constant);
   free(operator);
@@ -51,40 +54,70 @@ void calculator(char* input){
 
 float calculate_arithmetic(float* constant, const short* operator, short constant_size, short operator_size){
 
-
-
   // + - * / 1 2 3` 4`
 
   float result = 0;
 
-  short i = 0;
-  float* newConstant = NULL;
-  while(i < operator_size){
-    printf("operator: %d\n", operator[0]);
-    if(operator[i] == MULTIPLY_SIGN || operator[i] == DIVIDE_SIGN){
+  if(operator_size == constant_size - 1){
 
-      while(operator[i] == MULTIPLY_SIGN || operator[i] == DIVIDE_SIGN){
-        if(operator[i] == MULTIPLY_SIGN) constant[i+1] = constant[i] * constant[i+1];
-        if(operator[i] == DIVIDE_SIGN) constant[i+1] = constant[i] / constant[i+1];
+    int i = 0;
+    float* new_constant = NULL;
+    short* new_operater = NULL;
+    short new_operater_size = 0;
+    short new_constant_size = 0;
+
+    while(i < operator_size){
+
+      if(operator[i] == PLUS_SIGN || operator[i] == MINUS_SIGN){
+        // copy the plus_sign and minus_sign into new array
+        new_operater = realloc(new_operater, (i+1)*sizeof(short));
+        new_operater[i] = operator[i];
+        new_operater_size++;
+
+        new_constant = realloc(new_constant, (i+1)*sizeof(float));
+        new_constant[i] = constant[i];
+        new_constant_size++;
         i++;
-        printf("constant: %f\n", constant[i+1]);
       }
-      newConstant = realloc(newConstant, (i+1)*sizeof(float));
-      newConstant[i] = constant[i+1];
-    }else{
-      printf("yr\n");
-      newConstant = realloc(newConstant, (i+1)*sizeof(float));
-      newConstant[i] = constant[i];
+
+      if(operator[i] == MULTIPLY_SIGN || operator[i] == DIVIDE_SIGN){
+
+        while(operator[i] == MULTIPLY_SIGN || operator[i] == DIVIDE_SIGN){
+
+          if(operator[i] == MULTIPLY_SIGN)
+            constant[i+1] = constant[i] * constant[i+1];
+          if(operator[i] == DIVIDE_SIGN)
+            constant[i+1] = constant[i] / constant[i+1];
+          i++;
+        }
+
+        new_constant = realloc(new_constant, (i)*sizeof(float));
+        new_constant[i-1] = constant[i];
+      }
 
     }
-    i++;
-  }
-  newConstant = realloc(newConstant, (i+1)*sizeof(float));
-  newConstant[i] = constant[i];
+    new_constant = realloc(new_constant, (i+1)*sizeof(float));
+    new_constant[i] = constant[i];
+    new_constant_size++;
 
+    for(int i = 0; i < new_constant_size; i++){
+     printf("new_number_: %f\n", new_constant[i]);
+   }
+   for(int i = 0; i < new_operater_size; i++){
+     printf("new_operator_: %d\n", new_operater[i]);
+   }
+    short k = 0;
+    while(k < new_operater_size){
 
-  for(int a = 0; a < i + 1; a++){
-    printf("%f\n",newConstant[a]);
+      if(new_operater[k] == PLUS_SIGN)
+        new_constant[k+1] = new_constant[k] + new_constant[k+1];
+      if(new_operater[k] == MINUS_SIGN)
+        new_constant[k+1] = new_constant[k] - new_constant[k+1];
+
+      k++;
+    }
+    result = new_constant[k];
   }
+
   return result;
 }
