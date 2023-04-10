@@ -68,11 +68,12 @@ float calculate_arithmetic(float* constant, short* operator, short constant_size
   if(operator_size == constant_size - 1 && hasPlusMinus){
 
     int i = 0;
-    float* new_constant = NULL;
-    short* new_operater = NULL;
+    float* new_constant = calloc(0, sizeof(float));
+    short* new_operater = calloc(0, sizeof(short));
     short new_operater_size = 0;
     short new_constant_size = 0;
     short skipped = 0;
+
 
 
     while(i < operator_size){
@@ -130,6 +131,8 @@ float calculate_arithmetic(float* constant, short* operator, short constant_size
       k++;
     }
     result = new_constant[k];
+    free(new_constant);
+    free(new_operater);
 
   }else if(operator_size == constant_size - 1 ){
     //calculate  expression
@@ -145,8 +148,7 @@ float calculate_arithmetic(float* constant, short* operator, short constant_size
      }
      result = constant[k];
   }
-  free(constant);
-  free(operator);
+
 
   return result;
 }
