@@ -4,14 +4,13 @@
 #include <stdbool.h>
 #include "../include/scanner.h"
 #include "../include/calculator.h"
-#include "../include/callib.h"
 #include "../include/expression.h"
 
 void calculator(char* input){
 
-  char* postfix = convert_infix_to_postfix(input);
+  char* postfix = infixToPostfix(input);
   int result = evaluate_postfix(postfix);
-
+	// printf("postfix: %s\n", postfix);
+	free(postfix);
   printf("the result is %d\n", result);
-
 }

@@ -1,138 +1,141 @@
-#include "../include/expression.h"
-#include "../include/scanner.h"
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <stdio.h>
+#include "../include/expression.h"
 
-short test = 5;
-short top = -1;
 
-void push(char* stack, char element) {
-   stack[++top]=element;
-}
-char pop(char* stack) {
-   return stack[top--];
-}
-
-//returns precedence of operators
-int precedence(char symbol) {
-   switch(symbol) {
-      case '+':
-      case '-':
-         return 2;
-         break;
-      case '*':
-      case '/':
-         return 3;
-         break;
-      case '^':
-         return 4;
-         break;
-      case '(':
-      case ')':
-      case '#':
-         return 1;
-         break;
-   }
+// Function to return precedence of operators
+int precedence(char operator)
+{
+	switch (operator) {
+	case '+':
+	case '-':
+		return 1;
+	case '*':
+	case '/':
+		return 2;
+	case '^':
+		return 3;
+	default:
+		return -1;
+	}
 }
 
-//check whether the symbol is operator?
-int isOperator(char symbol) {
-   switch(symbol){
-      case '+':
-      case '-':
-      case '*':
-      case '/':
-      case '^':
-      case '(':
-      case ')':
-         return 1;
-      break;
-         default:
-         return 0;
-   }
+// Function to check if the scanned character
+// is an operator
+int isOperator(char ch)
+{
+	return (ch == '+' || ch == '-' || ch == '*' || ch == '/'
+			|| ch == '^');
 }
 
-char* convert_infix_to_postfix(char* infix){
-  char* stack = calloc(test + 1, sizeof(char));
+// Main functio to convert infix expression
+// to postfix expression
+char* infixToPostfix(char* infix)
+{
 
-  char* postfix = calloc(1, sizeof(char));
-  short postfix_size = 0;
-  short infix_size = strlen(infix);
-  short i, symbol;
-  stack[++top] = '#';
-  for(i = 0; i < infix_size; i++){
-    symbol = infix[i];
-    if(isOperator(symbol) == 0){
-      postfix = realloc(postfix, (postfix_size + 2) * sizeof(char));
-      postfix[postfix_size] = symbol;
-      postfix_size++;
-    }else{
-      if(symbol == '(') push(stack,symbol);
-      else{
-        if(symbol == ')'){
-          while(stack[top]!='('){
-            postfix = realloc(postfix, (postfix_size + 2) * sizeof(char));
-             postfix[postfix_size] = pop(stack);
-             postfix_size++;
-          }
-          pop(stack);//pop out (.
-        }else{
-          if(precedence(symbol)>precedence(stack[top])) push(stack, symbol);
-             else {
-             while(precedence(symbol)<=precedence(stack[top])) {
-               postfix = realloc(postfix, (postfix_size + 2) * sizeof(char));
-                postfix[postfix_size] = pop(stack);
-                postfix_size++;
-             }
-             push(stack, symbol);
-          }
-        }
-      }
-    }
-  }
-  while(stack[top] != '#') {
-     postfix[postfix_size] = pop(stack);
-     postfix_size++;
-  }
-  postfix[postfix_size] = '\0';
+  char space = ' ';
 
-  free(stack);
-  return postfix;
-}
+	int i, j;
+	int len_infix = strlen(infix);
+	char* postfix = calloc(2*len_infix, sizeof(char));
 
-short top_int = -1;
+	char stack[len_infix];
+	int top = -1;
 
-void push_int(int* stack_int, int element) {
-   stack_int[++top_int] = element;
-}
+	for (i = 0, j = 0; i < len_infix; i++) {
+		// if (infix[i] == ' ' || infix[i] == '\t')
+		// 	continue;
 
-char pop_int(int* stack_int) {
-   return stack_int[top_int--];
+		// If the scanned character is operand
+		// add it to the postfix expression
+		if (isalnum(infix[i])) {
+			postfix[j++] = infix[i];
+			if(isOperator(infix[i+1])) postfix[j++] = space;
+			if(infix[i+1] == ')') postfix[j++] = space;
+			else if(i == len_infix - 1) postfix[j++] = space;
+		}
+
+		// if the scanned character is '('
+		// push it in the stack
+		else if (infix[i] == '(') {
+			stack[++top] = infix[i];
+		}
+
+		// if the scanned character is ')'
+		// pop the stack and add it to the
+		// output string until empty or '(' found
+		else if (infix[i] == ')') {
+			while (top > -1 && stack[top] != '('){
+				postfix[j++] = stack[top--];
+        postfix[j++] = space;
+			}
+			if (top > -1 && stack[top] != '(')
+				return "Invalid Expression";
+			else
+				top--;
+		}
+
+		// If the scanned character is an operator
+		// push it in the stack
+		else if (isOperator(infix[i])) {
+			while (top > -1
+				&& precedence(stack[top])
+						>= precedence(infix[i])){
+				postfix[j++] = stack[top--];
+        postfix[j++] = space;
+			}
+			stack[++top] = infix[i];
+		}
+	}
+
+	// Pop all remaining elements from the stack
+	while (top > -1) {
+		if (stack[top] == '(') {
+			return "Invalid Expression";
+		}
+		postfix[j++] = stack[top--];
+	}
+	postfix[j] = '\0';
+	return postfix;
 }
 
 int evaluate_postfix(char *postfix){
-  int* stack_int = calloc(input_size + 1,sizeof(int));
-  char ch;
-  int i=0,operand1,operand2;
 
-  while( (ch=postfix[i++]) != '\0') {
-    if(isdigit(ch)) push_int(stack_int, ch-'0'); // Push the operand
-    else {
-      //Operator,pop two  operands
-      operand2 = pop_int(stack_int);
-      operand1 = pop_int(stack_int);
-      switch(ch) {
-        case '+': push_int(stack_int, operand1+operand2); break;
-        case '-': push_int(stack_int, operand1-operand2); break;
-        case '*': push_int(stack_int, operand1*operand2); break;
-        case '/': push_int(stack_int, operand1/operand2); break;
-      }
-    }
-  }
-  free(postfix);
-  int result = stack_int[top_int];
-  free(stack_int);
-  return result;
+	short postfix_len = strlen(postfix);
+
+	int stack[postfix_len];
+	short top = -1;
+
+	short i;
+	for(i = 0; postfix[i]; i++){
+		if(postfix[i] == ' ') continue;
+
+		else if(isdigit(postfix[i])){
+			int num = 0;
+			while(isdigit(postfix[i])){
+				num = num*10 + (postfix[i] - '0');
+				i++;
+			}
+			i--;
+			stack[++top] = num;
+		}
+		else{
+			int operand_2 = stack[top--];
+			int operand_1 = stack[top--];
+
+			switch(postfix[i]){
+				case '+': stack[++top] = operand_1 + operand_2; break;
+				case '-': stack[++top] = operand_1 - operand_2; break;
+				case '*': stack[++top] = operand_1 * operand_2; break;
+				case '/': stack[++top] = operand_1 / operand_2; break;
+
+			}
+
+		}
+
+	}
+	return stack[top--];
 }
